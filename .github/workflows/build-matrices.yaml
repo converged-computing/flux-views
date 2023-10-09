@@ -76,7 +76,7 @@ jobs:
       env:
         container: ${{ matrix.result.container_name }}
       run: |
-        container_name=flux-view-${container}
+        container_name=${container}-flux-view
         echo "Container name is ${container_name}"
         echo "container_name=${container_name}" >> $GITHUB_ENV
 
@@ -96,17 +96,15 @@ jobs:
         filename: ${{ matrix.result.filename }}
       run: |
         basedir=$(dirname $filename)
-        container=$(python -c "print('${container_name}'.strip('-'))")      
         printf "Base directory is ${basedir}\n"
-        printf "Building ${container}\n"
+        printf "Building ${container_name}\n"
         # Get relative path to PWD and generate dashed name from it
         cd $basedir
-        echo "${prefix} -t ${container} ."
+        echo "${prefix} -t ${container_name} ."
         build_args="$(echo "${prefix#*--build-arg}")"
         # Add build-arg for anaconda download
         echo "dockerfile_dir=${basedir}" >> $GITHUB_ENV
         echo "build_args=${build_args}" >> $GITHUB_ENV
-        echo "container=${container}" >> $GITHUB_ENV
         echo "filename=${filename}" >> $GITHUB_ENV
 
     - name: Build ${{ matrix.dockerfile[1] }}
@@ -118,4 +116,4 @@ jobs:
         push: ${{ github.event_name != 'pull_request' }}
         build-args: |
           ${{ env.build_args }}
-        tags: ${{ env.container }}
+        tags: ${{ env.container_name }}
