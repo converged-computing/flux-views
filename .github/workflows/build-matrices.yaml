@@ -17,7 +17,7 @@ jobs:
       empty_matrix: ${{ steps.dockerbuild.outputs.dockerbuild_matrix_empty }}
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
@@ -76,7 +76,7 @@ jobs:
       env:
         container: ${{ matrix.result.container_name }}
       run: |
-        container_name=${container}-flux-view
+        container_name=$(python .github/container_name.py "${container}" flux-view)
         echo "Container name is ${container_name}"
         echo "container_name=${container_name}" >> $GITHUB_ENV
 
