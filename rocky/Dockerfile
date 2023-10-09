@@ -30,7 +30,8 @@ RUN cd /opt/spack-environment && \
     spack env activate --sh -d . > activate.sh
 
 # Bare OS image to run the installed executables
-FROM rockylinux:8
+ARG tag=8
+FROM rockylinux:${tag}
 
 COPY --from=builder /opt/spack-environment /opt/spack-environment
 COPY --from=builder /opt/software /opt/software
