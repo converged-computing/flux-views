@@ -47,8 +47,5 @@ RUN { \
 && chmod a+x /entrypoint.sh \
 && ln -s /opt/views/view /opt/view
 
-# Ensure munge is installed and enabled. This is a design flaw
-RUN apt-get install -y munge
-
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "/bin/bash" ]
