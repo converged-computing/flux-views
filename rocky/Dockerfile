@@ -1,8 +1,7 @@
 ARG tag=8
 FROM spack/rockylinux${tag}:latest as builder
 
-# What we want to install and how we want to install it
-# is specified in a manifest file (spack.yaml)
+# Specify flux deps in the spack manifest file (spack.yaml)
 RUN mkdir /opt/spack-environment \
 &&  (echo spack: \
 &&   echo '  specs: [flux-sched, flux-core, flux-security]' \
@@ -52,4 +51,3 @@ RUN dnf install -y munge && systemctl enable munge
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "/bin/bash" ]
-

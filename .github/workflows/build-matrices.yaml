@@ -27,7 +27,7 @@ jobs:
       with: 
         root: .
         parser: dockerbuild
-        flags: "--registry ghcr.io/rse-ops --all"
+        flags: "--registry ghcr.io/converged-computing --all"
 
     - name: View and Check Build Matrix Result
       env:
@@ -81,7 +81,7 @@ jobs:
         echo "container_name=${container_name}" >> $GITHUB_ENV
 
     - name: Pull Docker Layers
-      run: docker pull ghcr.io/rse-ops/${container_name} || exit 0
+      run: docker pull ghcr.io/converged-computing/${container_name} || exit 0
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
