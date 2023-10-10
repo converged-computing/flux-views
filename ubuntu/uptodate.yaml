@@ -4,4 +4,3 @@ dockerbuild:
       key: "tag"
       versions:
        - "focal"
-       - "jammy"
