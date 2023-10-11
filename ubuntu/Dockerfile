@@ -5,7 +5,7 @@ FROM spack/ubuntu-${tag}:latest as builder
 # is specified in a manifest file (spack.yaml)
 RUN mkdir /opt/spack-environment \
 &&  (echo spack: \
-&&   echo '  specs: [flux-sched, flux-core, libzmq +libunwind +libsodium]' \
+&&   echo '  specs: [flux-sched, flux-core, libzmq@4.3.4]' \
 &&   echo '  view: /opt/views/view' \
 &&   echo '  concretizer:' \
 &&   echo '    unify: true' \

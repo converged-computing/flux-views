@@ -4,7 +4,7 @@ FROM spack/rockylinux${tag}:latest as builder
 # Specify flux deps in the spack manifest file (spack.yaml)
 RUN mkdir /opt/spack-environment \
 &&  (echo spack: \
-&&   echo '  specs: [flux-sched, flux-core, flux-security, libzmq +libunwind +libsodium]' \
+&&   echo '  specs: [flux-sched, flux-core, flux-security, libzmq@4.3.4]' \
 &&   echo '  view: /opt/views/view' \
 &&   echo '  concretizer:' \
 &&   echo '    unify: true' \
