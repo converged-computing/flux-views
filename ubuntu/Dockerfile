@@ -3,6 +3,8 @@ FROM spack/ubuntu-${tag}:latest as builder
 ARG ARCH=x86_64
 ENV ARCH=${ARCH}
 
+RUN apt-get update && apt-get install gettext-base
+
 # What we want to install and how we want to install it
 # is specified in a manifest file (spack.yaml)
 RUN mkdir /opt/spack-environment \
