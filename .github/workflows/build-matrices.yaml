@@ -47,15 +47,22 @@ jobs:
       fail-fast: false
       matrix:
         result: ${{ fromJson(needs.generate.outputs.dockerbuild_matrix) }}
-        arch: [linux/amd64]
+        arch: [linux/amd64, linux/arm64]
 
     if: ${{ needs.generate.outputs.empty_matrix == 'false' }}
 
-    name: Build ${{ matrix.result.container_name }} ${{ matrix.arch[0] }}
+    name: Build ${{ matrix.result.container_name }} ${{ matrix.arch }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
     - uses: actions/setup-go@v3
+
+    - name: Add custom buildx ARM builder
+      if: (matrix.arch == 'linux/arm64')
+      run: |
+       docker buildx create --name armbuilder
+       docker buildx use armbuilder
+       docker buildx inspect --bootstrap
 
     - name: GHCR Login
       if: (github.event_name != 'pull_request')
@@ -77,6 +84,15 @@ jobs:
         container: ${{ matrix.result.container_name }}
       run: |
         container_name=$(python .github/container_name.py "${container}" flux-view)
+        echo "Container name is ${container_name}"
+        echo "container_name=${container_name}" >> $GITHUB_ENV
+
+    - name: Set Container name
+      if: (matrix.arch == 'linux/arm64')
+      env:
+        container: ${{ matrix.result.container_name }}
+      run: |
+        container_name=$(python .github/container_name.py "${container}" flux-view-arm)
         echo "Container name is ${container_name}"
         echo "container_name=${container_name}" >> $GITHUB_ENV
 
@@ -112,7 +128,7 @@ jobs:
       with:
         context: ${{ env.dockerfile_dir }}
         file: ${{ env.filename }}
-        platforms: ${{ matrix.arch[0] }}
+        platforms: ${{ matrix.arch }}
         push: ${{ github.event_name != 'pull_request' }}
         build-args: |
           ${{ env.build_args }}
