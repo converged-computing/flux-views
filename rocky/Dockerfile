@@ -3,7 +3,7 @@ FROM spack/rockylinux${tag}:latest as builder
 ARG ARCH=x86_64
 ENV ARCH=${ARCH}
 
-RUN dnf update -y && dnf install -y gettext
+RUN dnf update -y && dnf install -y gettext curl
 
 # Specify flux deps in the spack manifest file (spack.yaml)
 RUN mkdir /opt/spack-environment \
@@ -16,7 +16,7 @@ RUN mkdir /opt/spack-environment \
 &&   echo '    all:' \
 &&   echo '      require: ["target=:${ARCH}"]' \
 &&   echo '  config:' \
-&&   echo '    install_tree: /opt/software') > /opt/spack-environment/spack.yaml
+&&   echo '    install_tree: /opt/software') > /opt/spack-environment/spack-template.yaml
 
 RUN envsubst < /opt/spack-environment/spack-template.yaml > /opt/spack-environment/spack.yaml && \
     cat /opt/spack-environment/spack.yaml
@@ -25,6 +25,7 @@ RUN envsubst < /opt/spack-environment/spack-template.yaml > /opt/spack-environme
 RUN cd /opt/spack-environment && \
     . /opt/spack/share/spack/setup-env.sh && \
     spack env activate . && \
+    spack external find curl && \
     spack install --fail-fast && spack gc -y
 
 # Strip all the binaries

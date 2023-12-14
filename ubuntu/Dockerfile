@@ -3,7 +3,7 @@ FROM spack/ubuntu-${tag}:latest as builder
 ARG ARCH=x86_64
 ENV ARCH=${ARCH}
 
-RUN apt-get update && apt-get install gettext-base
+RUN apt-get update && apt-get install gettext-base curl
 
 # What we want to install and how we want to install it
 # is specified in a manifest file (spack.yaml)
@@ -26,8 +26,8 @@ RUN envsubst < /opt/spack-environment/spack-template.yaml > /opt/spack-environme
 RUN cd /opt/spack-environment && \
     . /opt/spack/share/spack/setup-env.sh && \
     spack env activate . && \
+    spack external find curl && \
     spack install --fail-fast && spack gc -y
-
 
 # Strip all the binaries
 RUN find -L /opt/views/view/* -type f -exec readlink -f '{}' \; | \
