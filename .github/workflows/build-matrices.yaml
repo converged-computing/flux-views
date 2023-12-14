@@ -86,6 +86,7 @@ jobs:
         container_name=$(python .github/container_name.py "${container}" flux-view)
         echo "Container name is ${container_name}"
         echo "container_name=${container_name}" >> $GITHUB_ENV
+        echo "container_arch=x86_64" >> $GITHUB_ENV
 
     - name: Set Container name
       if: (matrix.arch == 'linux/arm64')
@@ -95,6 +96,7 @@ jobs:
         container_name=$(python .github/container_name.py "${container}" flux-view-arm)
         echo "Container name is ${container_name}"
         echo "container_name=${container_name}" >> $GITHUB_ENV
+        echo "container_arch=arm" >> $GITHUB_ENV
 
     - name: Pull Docker Layers
       run: docker pull ghcr.io/converged-computing/${container_name} || exit 0
@@ -132,5 +134,5 @@ jobs:
         push: ${{ github.event_name != 'pull_request' }}
         build-args: |
           ${{ env.build_args }}
-          ARCH=${{ matrix.arch }}
+          ARCH=${{ env.container_arch }}
         tags: ${{ env.container_name }}
