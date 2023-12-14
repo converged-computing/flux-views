@@ -3,7 +3,7 @@ FROM spack/rockylinux${tag}:latest as builder
 ARG ARCH=x86_64
 ENV ARCH=${ARCH}
 
-RUN dnf update -y && dnf install -y gettext curl
+RUN dnf update -y && dnf install -y gettext
 
 # Specify flux deps in the spack manifest file (spack.yaml)
 RUN mkdir /opt/spack-environment \
