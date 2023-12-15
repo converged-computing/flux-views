@@ -96,7 +96,7 @@ jobs:
         container_name=$(python .github/container_name.py "${container}" flux-view-arm)
         echo "Container name is ${container_name}"
         echo "container_name=${container_name}" >> $GITHUB_ENV
-        echo "container_arch=arm" >> $GITHUB_ENV
+        echo "container_arch=aarch64" >> $GITHUB_ENV
 
     - name: Pull Docker Layers
       run: docker pull ghcr.io/converged-computing/${container_name} || exit 0
