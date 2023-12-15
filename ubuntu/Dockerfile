@@ -26,7 +26,6 @@ RUN envsubst < /opt/spack-environment/spack-template.yaml > /opt/spack-environme
 RUN cd /opt/spack-environment && \
     . /opt/spack/share/spack/setup-env.sh && \
     spack env activate . && \
-    spack external find curl && \
     spack install --fail-fast && spack gc -y
 
 # Strip all the binaries
