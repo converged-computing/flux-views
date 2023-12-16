@@ -1,5 +1,9 @@
 ARG tag=jammy
 FROM spack/ubuntu-${tag}:latest as builder
+ARG ARCH=x86_64
+ENV ARCH=${ARCH}
+
+RUN apt-get update && apt-get install -y gettext-base
 
 # What we want to install and how we want to install it
 # is specified in a manifest file (spack.yaml)
@@ -11,12 +15,18 @@ RUN mkdir /opt/spack-environment \
 &&   echo '    unify: true' \
 &&   echo '  packages:' \
 &&   echo '    all:' \
-&&   echo '      require: ["target=:x86_64"]' \
+&&   echo '      require: ["target=:${ARCH}"]' \
 &&   echo '  config:' \
-&&   echo '    install_tree: /opt/software') > /opt/spack-environment/spack.yaml
+&&   echo '    install_tree: /opt/software') > /opt/spack-environment/spack-template.yaml
+
+RUN envsubst < /opt/spack-environment/spack-template.yaml > /opt/spack-environment/spack.yaml && \
+    cat /opt/spack-environment/spack.yaml
 
 # Install the software, remove unnecessary deps
-RUN cd /opt/spack-environment && spack env activate . && spack install --fail-fast && spack gc -y
+RUN cd /opt/spack-environment && \
+    . /opt/spack/share/spack/setup-env.sh && \
+    spack env activate . && \
+    spack install --fail-fast && spack gc -y
 
 # Strip all the binaries
 RUN find -L /opt/views/view/* -type f -exec readlink -f '{}' \; | \

@@ -1,7 +1,6 @@
 name: Flux View Build Matrices
 
 on:
-  # Enable for testing builds for a PR
   workflow_dispatch:
   pull_request: []
   push:
@@ -51,7 +50,7 @@ jobs:
 
     if: ${{ needs.generate.outputs.empty_matrix == 'false' }}
 
-    name: Build ${{ matrix.result.container_name }} ${{ matrix.arch[0] }}
+    name: Build ${{ matrix.result.container_name }} ${{ matrix.arch }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -79,6 +78,7 @@ jobs:
         container_name=$(python .github/container_name.py "${container}" flux-view)
         echo "Container name is ${container_name}"
         echo "container_name=${container_name}" >> $GITHUB_ENV
+        echo "container_arch=x86_64" >> $GITHUB_ENV
 
     - name: Pull Docker Layers
       run: docker pull ghcr.io/converged-computing/${container_name} || exit 0
@@ -112,7 +112,7 @@ jobs:
       with:
         context: ${{ env.dockerfile_dir }}
         file: ${{ env.filename }}
-        platforms: ${{ matrix.arch[0] }}
+        platforms: ${{ matrix.arch }}
         push: ${{ github.event_name != 'pull_request' }}
         build-args: |
           ${{ env.build_args }}
