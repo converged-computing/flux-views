@@ -1,0 +1,30 @@
+FROM rockylinux:9
+
+# These are needed for network
+ENV FI_EFA_USE_DEVICE_RDMA=1
+ENV RDMAV_FORK_SAFE=1
+
+# Install time for timed commands, and other helpful ones
+RUN dnf update -y && dnf install -y \
+    time git cmake sudo ca-certificates wget openssh jq mpich python3-pip vim gcc g++ mpich mpich-devel && \
+    dnf install -y epel-release && \
+    dnf config-manager --set-enabled crb && \
+    dnf install --nogpgcheck https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-$(rpm -E %rhel).noarch.rpm -y && \
+    dnf install --nogpgcheck https://mirrors.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-$(rpm -E %rhel).noarch.rpm -y && \
+    dnf install -y ffmpeg ffmpeg-devel && \
+    pip install clang-format
+
+# install laamps
+USER root
+RUN git clone --depth 1 --branch stable_29Sep2021_update2 https://github.com/lammps/lammps.git /opt/lammps && \
+    cd /opt/lammps && \
+    mkdir build && \
+    cd build && \
+    . /etc/profile && \ 
+    cmake ../cmake -D PKG_REAXFF=yes -D FT=FFTW3 -DCMAKE_PREFIX_PATH=/usr -D BUILD_MPI=yes -D PKG_OPT=yes -DCMAKE_PREFIX_PATH=/usr/lib64/mpich -D FFT=FFTW3 && \
+    make && \
+    make install
+    
+# Target this example (flux operator runs as root)
+ENV PATH=/root/.local/bin:$PATH
+WORKDIR /opt/lammps/examples/reaxff/HNS
