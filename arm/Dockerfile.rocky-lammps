@@ -12,6 +12,7 @@ RUN dnf update -y && dnf install -y \
     dnf install --nogpgcheck https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-$(rpm -E %rhel).noarch.rpm -y && \
     dnf install --nogpgcheck https://mirrors.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-$(rpm -E %rhel).noarch.rpm -y && \
     dnf install -y ffmpeg ffmpeg-devel && \
+    dnf install -y libfabric && \
     pip install clang-format
 
 # install laamps
