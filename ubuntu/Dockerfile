@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y gettext-base
 # is specified in a manifest file (spack.yaml)
 RUN mkdir /opt/spack-environment \
 &&  (echo spack: \
-&&   echo '  specs: [flux-sched, flux-core, libzmq@4.3.4]' \
+&&   echo '  specs: [flux-sched, flux-core, pmix@4.2.2, flux-pmix@0.4.0, libzmq@4.3.4]' \
 &&   echo '  view: /opt/views/view' \
 &&   echo '  concretizer:' \
 &&   echo '    unify: true' \

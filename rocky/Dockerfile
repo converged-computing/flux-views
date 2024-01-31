@@ -8,7 +8,7 @@ RUN dnf update -y && dnf install -y gettext
 # Specify flux deps in the spack manifest file (spack.yaml)
 RUN mkdir /opt/spack-environment \
 &&  (echo spack: \
-&&   echo '  specs: [flux-sched, flux-core, flux-security, libzmq@4.3.4]' \
+&&   echo '  specs: [flux-sched, flux-core, pmix@4.2.2, flux-pmix@0.4.0, libzmq@4.3.4]' \
 &&   echo '  view: /opt/views/view' \
 &&   echo '  concretizer:' \
 &&   echo '    unify: true' \
