@@ -6,3 +6,4 @@ dockerbuild:
        - "focal"
        - "jammy"
        - "bionic"
+       - "noble"

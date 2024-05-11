@@ -1,5 +1,5 @@
 ARG tag=jammy
-FROM spack/ubuntu-${tag}:latest as builder
+FROM spack/ubuntu-${tag}:latest AS builder
 ARG ARCH=x86_64
 ENV ARCH=${ARCH}
 
@@ -37,7 +37,9 @@ RUN find -L /opt/views/view/* -type f -exec readlink -f '{}' \; | \
 
 # Modifications to the environment that are necessary to run
 RUN cd /opt/spack-environment && \
-    spack env activate --sh -d . > activate.sh
+    spack env activate --sh -d . > activate.sh && \
+    . ./activate.sh && \
+    python3 -m ensurepip
 
 # Bare OS image to run the installed executables
 ARG tag=jammy
