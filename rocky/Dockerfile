@@ -1,14 +1,18 @@
 ARG tag=8
-FROM spack/rockylinux${tag}:latest as builder
+FROM spack/rockylinux${tag}:latest AS builder
 ARG ARCH=x86_64
 ENV ARCH=${ARCH}
 
-RUN dnf update -y && dnf install -y gettext
+# rocky 9 doesn't easily install texlive, which has a makeinfo
+RUN dnf update -y && dnf install -y gettext wget && \
+    yum install dnf-plugins-core || true && \
+    dnf config-manager --enable crb || true && \
+    dnf install -y texlive bison make
 
 # Specify flux deps in the spack manifest file (spack.yaml)
 RUN mkdir /opt/spack-environment \
 &&  (echo spack: \
-&&   echo '  specs: [flux-sched, flux-core, libzmq@4.3.4]' \
+&&   echo '  specs: [flux-sched, flux-core, pmix@4.2.2, flux-pmix, libzmq]' \
 &&   echo '  view: /opt/views/view' \
 &&   echo '  concretizer:' \
 &&   echo '    unify: true' \
@@ -25,6 +29,7 @@ RUN envsubst < /opt/spack-environment/spack-template.yaml > /opt/spack-environme
 RUN cd /opt/spack-environment && \
     . /opt/spack/share/spack/setup-env.sh && \
     spack env activate . && \
+    spack external find bison && \
     spack install --fail-fast && spack gc -y
 
 # Strip all the binaries
@@ -36,7 +41,9 @@ RUN find -L /opt/views/view/* -type f -exec readlink -f '{}' \; | \
 
 # Modifications to the environment that are necessary to run
 RUN cd /opt/spack-environment && \
-    spack env activate --sh -d . > activate.sh
+    spack env activate --sh -d . > activate.sh && \
+    . ./activate.sh && \
+    python3 -m ensurepip
 
 # Bare OS image to run the installed executables
 ARG tag=8
@@ -55,6 +62,10 @@ RUN { \
     } > /entrypoint.sh \
 && chmod a+x /entrypoint.sh \
 && ln -s /opt/views/view /opt/view
+
+# Ensure the flux module path includes lib64
+# Note that this should be fixed June 2024
+# ENV FLUX_MODULE_PATH=/opt/view/lib64/flux/modules:/opt/view/lib/flux/modules
 
 # Ensure munge is installed and enabled. This is a design flaw
 RUN dnf install -y munge && systemctl enable munge
