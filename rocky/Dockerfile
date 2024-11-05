@@ -1,35 +1,31 @@
-ARG tag=8
+ARG tag=9
 FROM spack/rockylinux${tag}:latest AS builder
-ARG ARCH=x86_64
-ENV ARCH=${ARCH}
+
+# docker buildx build --network host --platform linux/amd64,linux/arm64 -t ghcr.io/converged-computing/flux-view-rocky:tag-9-2025 --push .
 
 # rocky 9 doesn't easily install texlive, which has a makeinfo
 RUN dnf update -y && dnf install -y gettext wget && \
     yum install dnf-plugins-core || true && \
     dnf config-manager --enable crb || true && \
-    dnf install -y texlive bison make
+    dnf install -y texlive bison make python3 python3-devel
 
 # Specify flux deps in the spack manifest file (spack.yaml)
 RUN mkdir /opt/spack-environment \
 &&  (echo spack: \
-&&   echo '  specs: [flux-sched, flux-core, pmix@4.2.2, flux-pmix, libzmq]' \
+&&   echo '  specs: [flux-sched, flux-core, pmix, flux-pmix, libzmq]' \
 &&   echo '  view: /opt/views/view' \
 &&   echo '  concretizer:' \
 &&   echo '    unify: true' \
-&&   echo '  packages:' \
-&&   echo '    all:' \
-&&   echo '      require: ["target=:${ARCH}"]' \
 &&   echo '  config:' \
-&&   echo '    install_tree: /opt/software') > /opt/spack-environment/spack-template.yaml
-
-RUN envsubst < /opt/spack-environment/spack-template.yaml > /opt/spack-environment/spack.yaml && \
-    cat /opt/spack-environment/spack.yaml
+&&   echo '    install_tree:' \
+&&   echo '      root: /opt/software') > /opt/spack-environment/spack.yaml
 
 # Install the software, remove unnecessary deps
 RUN cd /opt/spack-environment && \
     . /opt/spack/share/spack/setup-env.sh && \
     spack env activate . && \
     spack external find bison && \
+    spack external find python && \
     spack install --fail-fast && spack gc -y
 
 # Strip all the binaries
@@ -46,7 +42,7 @@ RUN cd /opt/spack-environment && \
     python3 -m ensurepip
 
 # Bare OS image to run the installed executables
-ARG tag=8
+ARG tag=9
 FROM rockylinux:${tag}
 
 COPY --from=builder /opt/spack-environment /opt/spack-environment
