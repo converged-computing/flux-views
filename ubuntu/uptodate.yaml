@@ -4,5 +4,4 @@ dockerbuild:
       key: "tag"
       # jammy and focal won't build with flux-sched requiring gcc>12
       versions:
-       - "bionic"
        - "noble"
