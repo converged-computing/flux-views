@@ -11,4 +11,4 @@ It works as follows:
 4. We move the entire thing to a shared empty volume with the other application container
 5. The application container entrypoitn is edited to get wrapped with Flux
 
-We will see if it works! 
+We will see if it works!
