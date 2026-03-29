@@ -7,7 +7,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install time for timed commands, and other helpful ones
 RUN apt-get update && apt-get install -y \
-    time git cmake sudo ca-certificates wget curl ssh jq mpich python3-pip vim gcc g++ mpich && \    
+    time git cmake sudo ca-certificates wget curl ssh jq mpich python3-pip vim gcc g++ mpich && \
+    apt-get install -y libfabric-dev && \
     apt-get clean && \
     apt-get autoremove && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
