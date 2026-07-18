@@ -16,6 +16,9 @@ RUN mkdir /opt/spack-environment \
 &&   echo '  view: /opt/views/view' \
 &&   echo '  concretizer:' \
 &&   echo '    unify: true' \
+&&   echo '  packages:' \
+&&   echo '    boost:' \
+&&   echo '      require: "@1.85.0"' \
 &&   echo '  config:' \
 &&   echo '    install_tree:' \
 &&   echo '      root: /opt/software') > /opt/spack-environment/spack.yaml
