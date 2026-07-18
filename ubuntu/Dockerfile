@@ -9,13 +9,15 @@ RUN apt-get update && apt-get install -y gettext-base
 # is specified in a manifest file (spack.yaml)
 RUN mkdir /opt/spack-environment \
 &&  (echo spack: \
-&&   echo '  specs: [flux-sched, flux-core@master, pmix, flux-pmix, libzmq]' \
+&&   echo '  specs: [flux-sched, flux-core, pmix, flux-pmix, libzmq]' \
 &&   echo '  view: /opt/views/view' \
 &&   echo '  concretizer:' \
 &&   echo '    unify: true' \
 &&   echo '  packages:' \
 &&   echo '    all:' \
 &&   echo '      require: ["target=:${ARCH}"]' \
+&&   echo '    boost:' \
+&&   echo '      require: "@1.85.0"' \
 &&   echo '  config:' \
 &&   echo '    install_tree:' \
 &&   echo '      root: /opt/software') > /opt/spack-environment/spack-template.yaml
